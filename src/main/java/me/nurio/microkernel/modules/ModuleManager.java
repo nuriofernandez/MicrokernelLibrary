@@ -11,7 +11,7 @@ public class ModuleManager {
     private final EventManager eventManager;
 
     public void loadModule(Module module) {
-        System.err.printf("Enabling '%s'...%n", module.getAuthor() + "@" + module.getName());
+        System.out.printf("Enabling '%s'...%n", module.getAuthor() + "@" + module.getName());
 
         ModuleEnableEvent moduleEnableEvent = new ModuleEnableEvent(
             module.getName(),
@@ -26,11 +26,11 @@ public class ModuleManager {
         }
 
         module.onEnable();
-        System.err.printf("'%s' module was enabled successfully.%n", module.getAuthor() + "@" + module.getName());
+        System.out.printf("Module '%s' was enabled successfully.%n", module.getAuthor() + "@" + module.getName());
     }
 
     public void unloadModule(Module module) {
-        System.err.printf("Disabling '%s'...%n", module.getAuthor() + "@" + module.getName());
+        System.out.printf("Disabling '%s'...%n", module.getAuthor() + "@" + module.getName());
 
         ModuleDisableEvent moduleDisableEvent = new ModuleDisableEvent(
             module.getName(),
@@ -45,7 +45,7 @@ public class ModuleManager {
         }
 
         module.onDisable();
-        System.err.printf("'%s' module was disabled successfully.%n", module.getAuthor() + "@" + module.getName());
+        System.out.printf("Module '%s' was disabled successfully.%n", module.getAuthor() + "@" + module.getName());
     }
 
 }
