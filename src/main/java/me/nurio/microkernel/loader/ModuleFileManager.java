@@ -43,6 +43,8 @@ public class ModuleFileManager {
                 .lines()
                 .filter(line -> line.startsWith("main: "))
                 .map(line -> line.split("main: ")[1])
+                .map(line -> line.replaceAll("\"", ""))
+                .map(line -> line.replaceAll(" ", ""))
                 .findFirst()
                 .orElse(null);
         }
