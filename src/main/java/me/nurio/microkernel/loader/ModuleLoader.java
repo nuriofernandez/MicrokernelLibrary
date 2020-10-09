@@ -1,7 +1,9 @@
 package me.nurio.microkernel.loader;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.nurio.microkernel.modules.Module;
+import me.nurio.microkernel.modules.ModuleManager;
 
 import java.io.File;
 import java.net.URL;
@@ -10,13 +12,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class ModuleLoader {
 
-    private ModuleFileManager moduleFileManager = new ModuleFileManager();
+    private final ModuleFileManager moduleFileManager;
+    private final ModuleManager moduleManager;
 
     public List<Module> loadAll() {
         List<Module> modules = getAllModules();
-        modules.forEach(Module::onEnable);
+        modules.forEach(moduleManager::loadModule);
         return modules;
     }
 
