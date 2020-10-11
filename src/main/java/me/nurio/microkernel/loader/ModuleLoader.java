@@ -2,6 +2,7 @@ package me.nurio.microkernel.loader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import me.nurio.microkernel.exceptions.InvalidModuleLoadException;
 import me.nurio.microkernel.modules.Module;
 import me.nurio.microkernel.modules.ModuleManager;
 
@@ -35,6 +36,12 @@ public class ModuleLoader {
         );
 
         Class<?> mainClass = Class.forName(mainClassPath, true, child);
+
+        // Prevent loading invalid modules.
+        if (!mainClass.getSuperclass().equals(Module.class)) {
+            throw new InvalidModuleLoadException("Module main class does not extends Module");
+        }
+
         return (Module) mainClass.getConstructor().newInstance();
     }
 
