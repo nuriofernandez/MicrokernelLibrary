@@ -35,7 +35,7 @@ public class ModuleManagerTest {
 }
 
 @Getter
-class ModuleTest implements Module {
+class ModuleTest extends KernelModule {
 
     private String name = "Test";
     private String author = "Nurio";

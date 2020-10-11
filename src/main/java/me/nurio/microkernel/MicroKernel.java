@@ -5,7 +5,7 @@ import lombok.SneakyThrows;
 import me.nurio.events.EventManager;
 import me.nurio.microkernel.loader.ModuleFileManager;
 import me.nurio.microkernel.loader.ModuleLoader;
-import me.nurio.microkernel.modules.Module;
+import me.nurio.microkernel.modules.IModule;
 import me.nurio.microkernel.modules.ModuleManager;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class MicroKernel {
     public static void main(String[] args) {
         System.out.println("Starting modules...");
 
-        List<Module> loadedModules = moduleLoader.loadAll();
+        List<IModule> loadedModules = moduleLoader.loadAll();
 
         System.out.println("Waiting 12 seconds to stop...");
         Thread.sleep(12000);

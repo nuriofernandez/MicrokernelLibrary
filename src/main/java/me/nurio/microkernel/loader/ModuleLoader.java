@@ -3,7 +3,8 @@ package me.nurio.microkernel.loader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import me.nurio.microkernel.exceptions.InvalidModuleLoadException;
-import me.nurio.microkernel.modules.Module;
+import me.nurio.microkernel.modules.IModule;
+import me.nurio.microkernel.modules.KernelModule;
 import me.nurio.microkernel.modules.ModuleManager;
 
 import java.io.File;
@@ -19,14 +20,14 @@ public class ModuleLoader {
     private final ModuleFileManager moduleFileManager;
     private final ModuleManager moduleManager;
 
-    public List<Module> loadAll() {
-        List<Module> modules = getAllModules();
+    public List<IModule> loadAll() {
+        List<IModule> modules = getAllModules();
         modules.forEach(moduleManager::loadModule);
         return modules;
     }
 
     @SneakyThrows
-    public Module getModule(File moduleFile) {
+    public IModule getModule(File moduleFile) {
         String mainClassPath = moduleFileManager.getMainClassPath(moduleFile);
         if (mainClassPath == null) return null;
 
@@ -38,14 +39,14 @@ public class ModuleLoader {
         Class<?> mainClass = Class.forName(mainClassPath, true, child);
 
         // Prevent loading invalid modules.
-        if (!mainClass.getSuperclass().equals(Module.class)) {
-            throw new InvalidModuleLoadException("Module main class does not extends Module");
+        if (!mainClass.getSuperclass().equals(KernelModule.class)) {
+            throw new InvalidModuleLoadException("Module main class does not extends KernelModule");
         }
 
-        return (Module) mainClass.getConstructor().newInstance();
+        return (IModule) mainClass.getConstructor().newInstance();
     }
 
-    public List<Module> getAllModules() {
+    public List<IModule> getAllModules() {
         return moduleFileManager.getModulesFiles()
             .stream()
             .map(this::getModule)

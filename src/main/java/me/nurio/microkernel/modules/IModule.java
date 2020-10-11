@@ -1,6 +1,6 @@
 package me.nurio.microkernel.modules;
 
-public interface Module {
+public interface IModule {
 
     String getName();
 
