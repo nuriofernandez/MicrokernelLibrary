@@ -8,6 +8,7 @@ import me.nurio.microkernel.loader.ModuleLoader;
 import me.nurio.microkernel.modules.IModule;
 import me.nurio.microkernel.modules.ModuleManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MicroKernel {
@@ -18,18 +19,20 @@ public class MicroKernel {
     @Getter private static ModuleManager moduleManager = new ModuleManager(eventManager);
     @Getter private static ModuleLoader moduleLoader = new ModuleLoader(moduleFileManager, moduleManager);
 
+    @Getter private static List<IModule> loadedModules = new ArrayList<>();
+
     @SneakyThrows
     public static void main(String[] args) {
+        long startTime = System.currentTimeMillis();
+
         System.out.println("Starting modules...");
+        loadedModules = moduleLoader.loadAll();
 
-        List<IModule> loadedModules = moduleLoader.loadAll();
+        System.out.println("Registering shutdown hook...");
+        Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
-        System.out.println("Waiting 12 seconds to stop...");
-        Thread.sleep(12000);
-
-        System.out.println("Stopping...");
-        Thread.sleep(500);
-        loadedModules.forEach(moduleManager::unloadModule);
+        long startupTime = System.currentTimeMillis() - startTime;
+        System.out.printf("Done. Started in %dms.%n", startupTime);
     }
 
 }
