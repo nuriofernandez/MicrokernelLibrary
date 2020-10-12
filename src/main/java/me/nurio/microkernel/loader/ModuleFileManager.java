@@ -1,12 +1,15 @@
 package me.nurio.microkernel.loader;
 
-import lombok.SneakyThrows;
+import me.nurio.microkernel.exceptions.InvalidModuleLoadException;
+import me.nurio.microkernel.modules.ModuleYaml;
+import org.apache.commons.lang3.StringUtils;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.introspector.BeanAccess;
+import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +18,13 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public class ModuleFileManager {
+
+    private Yaml yamlLoader = new Yaml(new Constructor(ModuleYaml.class), new Representer() {
+        {
+            getPropertyUtils().setSkipMissingProperties(true);
+            getPropertyUtils().setBeanAccess(BeanAccess.FIELD);
+        }
+    });
 
     public File getModulesFolder() {
         File file = new File("modules");
@@ -31,22 +41,26 @@ public class ModuleFileManager {
             .collect(Collectors.toList());
     }
 
-    @SneakyThrows
-    public String getMainClassPath(File path) {
-        try (JarFile jarFile = new JarFile(path)) {
+    public ModuleYaml getModuleYML(File moduleJar) throws InvalidModuleLoadException {
+        try (JarFile jarFile = new JarFile(moduleJar)) {
             JarEntry entry = jarFile.getJarEntry("module.yml");
-            if (entry == null) return null;
-            InputStream input = jarFile.getInputStream(entry);
 
-            // This code is temporary, I hope hope hope.
-            return new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))
-                .lines()
-                .filter(line -> line.startsWith("main: "))
-                .map(line -> line.split("main: ")[1])
-                .map(line -> line.replaceAll("\"", ""))
-                .map(line -> line.replaceAll(" ", ""))
-                .findFirst()
-                .orElse(null);
+            // Control missing module.yml file.
+            if (entry == null) {
+                throw new InvalidModuleLoadException("Module doesn't have a module.yml");
+            }
+
+            InputStream inputStream = jarFile.getInputStream(entry);
+            ModuleYaml moduleYaml = yamlLoader.load(inputStream);
+
+            // Validate yml file as required params.
+            if (StringUtils.isBlank(moduleYaml.getMain())) {
+                throw new InvalidModuleLoadException("Module main class is not specified at the module.yml");
+            }
+
+            return moduleYaml;
+        } catch (Exception exception) {
+            throw new InvalidModuleLoadException(exception.getMessage());
         }
     }
 

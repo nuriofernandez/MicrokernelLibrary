@@ -6,6 +6,8 @@ import me.nurio.microkernel.exceptions.InvalidModuleLoadException;
 import me.nurio.microkernel.modules.IModule;
 import me.nurio.microkernel.modules.KernelModule;
 import me.nurio.microkernel.modules.ModuleManager;
+import me.nurio.microkernel.modules.ModuleYaml;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.net.URL;
@@ -28,8 +30,9 @@ public class ModuleLoader {
 
     @SneakyThrows
     public IModule getModule(File moduleFile) {
-        String mainClassPath = moduleFileManager.getMainClassPath(moduleFile);
-        if (mainClassPath == null) return null;
+        ModuleYaml moduleYaml = moduleFileManager.getModuleYML(moduleFile);
+        String mainClassPath = moduleYaml.getMain();
+        if (StringUtils.isBlank(mainClassPath)) return null;
 
         URLClassLoader child = new URLClassLoader(
             new URL[]{moduleFile.toURI().toURL()},
