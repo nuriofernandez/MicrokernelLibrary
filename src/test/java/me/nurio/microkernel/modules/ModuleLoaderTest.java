@@ -2,33 +2,34 @@ package me.nurio.microkernel.modules;
 
 import lombok.Getter;
 import me.nurio.events.EventManager;
+import me.nurio.microkernel.loader.ModuleLoader;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class ModuleManagerTest {
+public class ModuleLoaderTest {
 
     private ModuleTest module;
     private EventManager eventManager;
-    private ModuleManager moduleManager;
+    private ModuleLoader moduleLoader;
 
     @Before
     public void start() {
         module = new ModuleTest();
         eventManager = new EventManager();
-        moduleManager = new ModuleManager(eventManager);
+        moduleLoader = new ModuleLoader(eventManager);
     }
 
     @Test
     public void testLoadModule() {
-        moduleManager.loadModule(module);
+        moduleLoader.loadModule(module);
         assertTrue(module.isEnabled());
     }
 
     @Test
     public void testUnloadModule() {
-        moduleManager.unloadModule(module);
+        moduleLoader.unloadModule(module);
         assertTrue(module.isDisabled());
     }
 

@@ -24,21 +24,21 @@ public class ModuleYamlTest {
     @Test
     public void loadModule_shouldLoadSuccessfully_whenModuleIsWellMade() throws InvalidModuleLoadException {
         File file = new File(classLoader.getResource("valid-module-main.jar").getFile());
-        ModuleYaml moduleYaml = moduleFileManager.getModuleYML(file);
+        ModuleYaml moduleYaml = moduleFileManager.getYamler().getModuleYaml(file);
         assertEquals("org.packagepath.to.mainclass.CounterModule", moduleYaml.getMain());
     }
 
     @Test
     public void loadModule_shouldLoadSuccessfully_whenModuleIsWellMadeButHasMoreFieldsThanExpected() throws InvalidModuleLoadException {
         File file = new File(classLoader.getResource("valid-module-main-extra-field-potato.jar").getFile());
-        ModuleYaml moduleYaml = moduleFileManager.getModuleYML(file);
+        ModuleYaml moduleYaml = moduleFileManager.getYamler().getModuleYaml(file);
         assertEquals("org.packagepath.to.mainclass.CounterModule", moduleYaml.getMain());
     }
 
     @Test(expected = InvalidModuleLoadException.class)
     public void loadModule_shouldThrowAnException_whenModuleDoesNotSpecifyRequiredMainClassAtTheYmlFile() throws InvalidModuleLoadException {
         File file = new File(classLoader.getResource("invalid-module-no-main.jar").getFile());
-        moduleFileManager.getModuleYML(file);
+        moduleFileManager.getYamler().getModuleYaml(file);
     }
 
 }
